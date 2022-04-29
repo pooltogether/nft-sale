@@ -8,8 +8,10 @@
 #!/.yarn/cache
 /.pnp.*
 
+.DS_Store
 .envrc
 
+abis
 artifacts
 cache
 docs
