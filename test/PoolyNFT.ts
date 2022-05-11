@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BigNumber, Contract, ContractFactory } from "ethers";
+import { Contract, ContractFactory } from "ethers";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -22,8 +22,8 @@ describe("PoolyNFT", () => {
   const nftName = "PoolTogether NFT";
   const nftSymbol = "PTNFT";
   const nftPrice = toWei("75");
-  const nftMaxNumber = 5;
-  const nftMaxMint = 1;
+  const nftMaxNumber = 10;
+  const nftMaxMint = 5;
 
   let constructorTest = false;
 
@@ -162,6 +162,16 @@ describe("PoolyNFT", () => {
         .withArgs(owner.address, 1, nftPrice);
     });
 
+    it("should mint 5 Pooly NFTs in one go", async () => {
+      await increaseTime(100);
+
+      await poolyNFT.mintNFT(5, {
+        value: nftPrice.mul(5),
+      });
+
+      expect(await poolyNFT.totalSupply()).to.equal(5);
+    });
+
     it("should fail to mint a Pooly NFT if NFT sale has not started yet", async () => {
       await expect(
         poolyNFT.mintNFT(1, {
@@ -183,7 +193,7 @@ describe("PoolyNFT", () => {
     it("should fail to mint a Pooly NFT if NFTs are sold out", async () => {
       await increaseTime(100);
 
-      for (let index = 0; index < 5; index++) {
+      for (let index = 0; index < 10; index++) {
         poolyNFT.mintNFT(1, {
           value: nftPrice,
         });
@@ -200,8 +210,8 @@ describe("PoolyNFT", () => {
       await increaseTime(100);
 
       await expect(
-        poolyNFT.mintNFT(2, {
-          value: nftPrice,
+        poolyNFT.mintNFT(6, {
+          value: nftPrice.mul(6),
         })
       ).to.be.revertedWith("PTNFT/exceeds-max-mint");
     });
@@ -241,8 +251,8 @@ describe("PoolyNFT", () => {
 
       const result = await poolyNFT.royaltyInfo(0, toWei("75"));
 
-      expect(result[0]).to.equal(poolyNFT.address);
-      expect(result[1]).to.equal(toWei("7.5"));
+      expect(result[0]).to.equal(AddressZero);
+      expect(result[1]).to.equal(toWei("0"));
     });
   });
 
@@ -260,27 +270,21 @@ describe("PoolyNFT", () => {
 
       expect(await provider.getBalance(poolyNFT.address)).to.equal(amount);
 
-      await expect(poolyNFT.withdraw(owner.address, amount))
+      await expect(poolyNFT.withdraw(amount))
         .to.emit(poolyNFT, "Withdrawn")
-        .withArgs(owner.address, owner.address, amount);
+        .withArgs(owner.address, amount);
 
       expect(await provider.getBalance(poolyNFT.address)).to.equal(Zero);
     });
 
     it("should fail to withdraw if not owner", async () => {
-      await expect(poolyNFT.connect(stranger).withdraw(owner.address, nftPrice)).to.be.revertedWith(
+      await expect(poolyNFT.connect(stranger).withdraw(nftPrice)).to.be.revertedWith(
         "Ownable/caller-not-owner"
       );
     });
 
-    it("should fail to withdraw if recipient is address zero", async () => {
-      await expect(poolyNFT.withdraw(AddressZero, nftPrice)).to.be.revertedWith(
-        "PTNFT/recipient-not-zero-address"
-      );
-    });
-
     it("should fail to withdraw if amount withdrawn is not greater than zero", async () => {
-      await expect(poolyNFT.withdraw(owner.address, toWei("0"))).to.be.revertedWith(
+      await expect(poolyNFT.withdraw(toWei("0"))).to.be.revertedWith(
         "PTNFT/withdraw-amount-gt-zero"
       );
     });

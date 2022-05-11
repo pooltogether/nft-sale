@@ -44,28 +44,27 @@ contract PoolyNFT is ERC721Royalty, Ownable {
 
   /**
    * @notice Emitted when ETH are withdrawn from the contract.
-   * @param from Address of the caller
-   * @param to Address of the receiver
+   * @param owner Address of the caller and recipient. Owner of this contract.
    * @param amount Amount of ETH withdrawn
    */
-  event Withdrawn(address indexed from, address indexed to, uint256 amount);
+  event Withdrawn(address indexed owner, uint256 amount);
 
   /* ============ Variables ============ */
 
+  /// @notice NFT price in ETH
+  uint128 public immutable nftPrice;
+
   /// @notice Max number of NFTs available in this collection
-  uint256 public immutable maxNFT;
+  uint32 public immutable maxNFT;
 
   /// @notice Max number of NFTs that can be minted in a single transaction
-  uint256 public immutable maxMint;
-
-  /// @notice NFT price in ETH
-  uint256 public immutable nftPrice;
+  uint32 public immutable maxMint;
 
   /// @notice Timestamp at which the NFTs will be available for minting
-  uint256 public immutable startTimestamp;
+  uint32 public immutable startTimestamp;
 
   /// @notice Timestamp at which the NFTs will be unavailable for minting
-  uint256 public immutable endTimestamp;
+  uint32 public immutable endTimestamp;
 
   /// @notice Total supply of NFTs
   uint256 public totalSupply;
@@ -86,11 +85,11 @@ contract PoolyNFT is ERC721Royalty, Ownable {
   constructor(
     string memory _name,
     string memory _symbol,
-    uint256 _nftPrice,
-    uint256 _maxNFT,
-    uint256 _maxMint,
-    uint256 _startTimestamp,
-    uint256 _endTimestamp,
+    uint128 _nftPrice,
+    uint32 _maxNFT,
+    uint32 _maxMint,
+    uint32 _startTimestamp,
+    uint32 _endTimestamp,
     address _owner
   ) ERC721(_name, _symbol) Ownable(_owner) {
     require(_owner != address(0), "PTNFT/owner-not-zero-address");
@@ -105,9 +104,6 @@ contract PoolyNFT is ERC721Royalty, Ownable {
     maxMint = _maxMint;
     startTimestamp = _startTimestamp;
     endTimestamp = _endTimestamp;
-
-    // Set royalty fee of all NFTs to 10%
-    _setDefaultRoyalty(address(this), 1000);
 
     emit NFTInitialized(
       _name,
@@ -131,24 +127,27 @@ contract PoolyNFT is ERC721Royalty, Ownable {
     uint256 _currentTimestamp = block.timestamp;
 
     require(
-      _currentTimestamp > startTimestamp && _currentTimestamp < endTimestamp,
+      _currentTimestamp >= startTimestamp && _currentTimestamp < endTimestamp,
       "PTNFT/sale-inactive"
     );
 
-    require(totalSupply + _numberOfTokens <= maxNFT, "PTNFT/nfts-sold-out");
+    uint256 _totalSupply = totalSupply;
+
+    require(_totalSupply + _numberOfTokens <= maxNFT, "PTNFT/nfts-sold-out");
     require(_numberOfTokens <= maxMint, "PTNFT/exceeds-max-mint");
 
     uint256 _amount = _numberOfTokens * nftPrice;
-    require(_amount <= msg.value, "PTNFT/insufficient-funds");
+    require(_amount == msg.value, "PTNFT/insufficient-funds");
 
-    for (uint256 index = 0; index < _numberOfTokens; index++) {
-      uint256 _mintIndex = totalSupply;
+    for (uint256 index; index < _numberOfTokens; index++) {
+      uint256 _mintIndex = _totalSupply + index;
 
-      if (totalSupply < maxNFT) {
+      if (_mintIndex < maxNFT) {
         _safeMint(msg.sender, _mintIndex);
-        totalSupply++;
       }
     }
+
+    totalSupply = _totalSupply + _numberOfTokens;
 
     emit NFTMinted(msg.sender, _numberOfTokens, _amount);
   }
@@ -165,18 +164,16 @@ contract PoolyNFT is ERC721Royalty, Ownable {
   /**
    * @notice Withdraw ETH from the contract.
    * @dev This function is only callable by the owner of the contract.
-   * @param _to Address to send the ETH to
    * @param _amount Amount of ETH to withdraw
    */
-  function withdraw(address payable _to, uint256 _amount) external onlyOwner {
-    require(_to != address(0), "PTNFT/recipient-not-zero-address");
+  function withdraw(uint256 _amount) external onlyOwner {
     require(_amount > 0, "PTNFT/withdraw-amount-gt-zero");
 
-    (bool _success, ) = _to.call{ value: _amount }("");
+    (bool _success, ) = msg.sender.call{ value: _amount }("");
 
     require(_success, "PTNFT/failed-to-withdraw-eth");
 
-    emit Withdrawn(msg.sender, _to, _amount);
+    emit Withdrawn(msg.sender, _amount);
   }
 
   /* ============ Internal Functions ============ */
