@@ -239,7 +239,7 @@ describe("PoolyNFT", () => {
         value: nftPrice,
       });
 
-      const result = await poolyNFT.royaltyInfo(0, toWei('75'));
+      const result = await poolyNFT.royaltyInfo(0, toWei("75"));
 
       expect(result[0]).to.equal(poolyNFT.address);
       expect(result[1]).to.equal(toWei("7.5"));
