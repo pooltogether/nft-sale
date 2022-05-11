@@ -256,6 +256,27 @@ describe("PoolyNFT", () => {
     });
   });
 
+  describe("setRoyaltyFee()", () => {
+    it("should set royalty fee", async () => {
+      await increaseTime(100);
+
+      await poolyNFT.mintNFT(1, {
+        value: nftPrice,
+      });
+
+      const fee = 1000;
+
+      await expect(poolyNFT.setRoyaltyFee(owner.address, fee))
+        .to.emit(poolyNFT, "RoyaltyFeeSet")
+        .withArgs(owner.address, owner.address, fee);
+
+      const result = await poolyNFT.royaltyInfo(0, toWei("75"));
+
+      expect(result[0]).to.equal(owner.address);
+      expect(result[1]).to.equal(toWei("7.5"));
+    });
+  });
+
   describe("withdraw()", () => {
     it("should withdraw ETH stored in contract if owner", async () => {
       const amount = nftPrice.mul(5);

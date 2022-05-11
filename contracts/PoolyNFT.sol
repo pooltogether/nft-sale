@@ -10,8 +10,6 @@ import { Ownable } from "@pooltogether/owner-manager-contracts/contracts/Ownable
  * @notice NFT to help PoolTogether Inc. raise funds that will be used to cover cost of the legal fees.
  */
 contract PoolyNFT is ERC721Royalty, Ownable {
-  /* ============ Events ============ */
-
   /**
    * @notice Emitted when the NFT is initialized.
    * @param name Name of the NFT collection
@@ -41,6 +39,14 @@ contract PoolyNFT is ERC721Royalty, Ownable {
    * @param amount Amount of ETH received
    */
   event NFTMinted(address indexed to, uint256 numberOfTokens, uint256 amount);
+
+  /**
+   * @notice Emitted when royalty fee has been set.
+   * @param owner Address of the caller. Owner of this contract.
+   * @param recipient Address to whom the royalty fee will be paid
+   * @param fee Fee expressed in basis points
+   */
+  event RoyaltyFeeSet(address indexed owner, address indexed recipient, uint96 fee);
 
   /**
    * @notice Emitted when ETH are withdrawn from the contract.
@@ -159,6 +165,18 @@ contract PoolyNFT is ERC721Royalty, Ownable {
    */
   function setBaseURI(string memory baseURI_) external onlyOwner {
     baseURI = baseURI_;
+  }
+
+  /**
+   * @notice Sets the royalty fee that all ids in this contract will default to.
+   * @dev Fees are expressed in basis points. For example: 1000 = 10%
+   * @param _recipient Address to whom the royalty fee will be paid
+   * @param _fee Percentage of the secondary sales that will be paid to the `_recipient`
+   */
+  function setRoyaltyFee(address _recipient, uint96 _fee) external onlyOwner {
+    _setDefaultRoyalty(_recipient, _fee);
+
+    emit RoyaltyFeeSet(msg.sender, _recipient, _fee);
   }
 
   /**
