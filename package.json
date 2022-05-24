@@ -11,7 +11,6 @@
     "coverage:file": "HIDE_DEPLOY_LOG=true OPTIMIZER_DISABLED=true hardhat coverage --testfiles",
     "docs": "solidity-docgen --solc-module solc -i contracts -o docs -t templates",
     "deploy": "hardhat deploy --network",
-    "deploy:rinkeby": "hardhat deploy --network rinkeby",
     "deploy:mainnet": "hardhat deploy --network mainnet",
     "deploy:dry-run": "hardhat node --network hardhat",
     "verify": "hardhat etherscan-verify --license GPL-3.0 --solc-input --network",
