@@ -24,11 +24,11 @@ contract PoolyNFT is ERC721Royalty, Ownable {
   event NFTInitialized(
     string name,
     string symbol,
-    uint256 nftPrice,
-    uint256 maxNFT,
-    uint256 maxMint,
-    uint256 startTimestamp,
-    uint256 endTimestamp,
+    uint128 nftPrice,
+    uint32 maxNFT,
+    uint32 maxMint,
+    uint32 startTimestamp,
+    uint32 endTimestamp,
     address owner
   );
 
@@ -84,6 +84,9 @@ contract PoolyNFT is ERC721Royalty, Ownable {
    * @notice Initializes the NFT contract
    * @param _name NFT collection name
    * @param _symbol NFT collection symbol
+   * @param _nftPrice NFT price in ETH
+   * @param _maxNFT Max number of NFTs available in this collection
+   * @param _maxMint Max number of NFTs that can be minted in a single transaction
    * @param _startTimestamp Timestamp at which the NFT sale will start
    * @param _endTimestamp Timestamp at which the NFT sale will end
    * @param _owner Owner of this contract

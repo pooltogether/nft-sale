@@ -14,6 +14,7 @@
 abis
 artifacts
 cache
+deployments/localhost
 docs
 node_modules
 types

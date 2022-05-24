@@ -264,7 +264,7 @@ describe("PoolyNFT", () => {
         value: nftPrice,
       });
 
-      const fee = 1000;
+      const fee = 1000; // 10%
 
       await expect(poolyNFT.setRoyaltyFee(owner.address, fee))
         .to.emit(poolyNFT, "RoyaltyFeeSet")

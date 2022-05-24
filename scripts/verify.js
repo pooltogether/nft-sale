@@ -94,7 +94,7 @@ async function verifyEtherscanClone() {
       const contractName = fileName.substring(0, fileName.length - 5).trim(); // strip .json
       const contractDirPath = find.fileSync(contractName + ".sol", "./contracts")[0];
       if (!contractDirPath) {
-        error(`There is no matching contract for ${contractName}. This is likely becuase the deployment contract name is different from the Solidity contract title.
+        error(`There is no matching contract for ${contractName}. This is likely because the deployment contract name is different from the Solidity contract title.
          Run verification manually. See verifyEtherscanClone() for details`);
         return;
       }
