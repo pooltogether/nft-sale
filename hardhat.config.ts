@@ -46,13 +46,13 @@ const config: HardhatUserConfig = {
   },
   networks,
   solidity: {
-    version: '0.8.6',
+    version: '0.8.13',
     settings: {
       optimizer: {
         enabled: optimizerEnabled,
         runs: 200,
       },
-      evmVersion: 'istanbul',
+      evmVersion: 'london',
     },
   },
 };

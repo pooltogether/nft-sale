@@ -5,7 +5,7 @@
     "func-order": "off",
     "mark-callable-contracts": "off",
     "no-empty-blocks": "off",
-    "compiler-version": ["error", "0.8.6"],
+    "compiler-version": ["error", "0.8.13"],
     "private-vars-leading-underscore": "off",
     "code-complexity": "warn",
     "const-name-snakecase": "warn",
@@ -17,6 +17,7 @@
       }
     ],
     "max-line-length": ["warn", 160],
+    "avoid-low-level-calls": "off",
     "avoid-suicide": "error",
     "avoid-sha3": "warn",
     "not-rely-on-time": "off",

@@ -10,7 +10,9 @@
     "coverage": "HIDE_DEPLOY_LOG=true OPTIMIZER_DISABLED=true hardhat coverage",
     "coverage:file": "HIDE_DEPLOY_LOG=true OPTIMIZER_DISABLED=true hardhat coverage --testfiles",
     "docs": "solidity-docgen --solc-module solc -i contracts -o docs -t templates",
-    "deploy": "hardhat deploy --write true --network",
+    "deploy": "hardhat deploy --network",
+    "deploy:mainnet": "hardhat deploy --network mainnet",
+    "deploy:dry-run": "hardhat node --network hardhat",
     "verify": "hardhat etherscan-verify --license GPL-3.0 --solc-input --network",
     "etherscan-verify": "hardhat etherscan:verify --network",
     "etherscan-verify-polygon": "hardhat --config hardhat.config.polygon.js run ./scripts/verify.js --network",
@@ -27,12 +29,15 @@
     "typechain": "typechain --target=ethers-v5 \"./abis/*.json\" --out-dir \"./types\"",
     "prepack": "yarn compile"
   },
+  "dependencies": {
+    "@openzeppelin/contracts": "4.6.0",
+    "@pooltogether/owner-manager-contracts": "1.1.0"
+  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "2.0.4",
     "@nomiclabs/hardhat-etherscan": "3.0.0",
     "@nomiclabs/hardhat-waffle": "2.0.2",
     "@openzeppelin/hardhat-upgrades": "1.14.0",
-    "@pooltogether/pooltogether-proxy-factory-package": "1.0.1",
     "@typechain/ethers-v5": "9.0.0",
     "@typechain/hardhat": "4.0.0",
     "@types/chai": "4.3.0",
